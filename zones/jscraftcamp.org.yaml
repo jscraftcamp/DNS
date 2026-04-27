@@ -12,3 +12,7 @@
 mx0:
   type: A
   value: 80.237.138.5
+
+www:
+  type: CNAME
+  value: apex-loadbalancer.netlify.com.
