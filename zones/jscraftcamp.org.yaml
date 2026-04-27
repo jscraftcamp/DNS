@@ -1,0 +1,14 @@
+---
+'':
+  - type: A
+    value: 75.2.60.5
+  - type: MX
+    value:
+      exchange: mx0.jscraftcamp.org.
+      preference: 50
+  - type: TXT
+    value: v=spf1 a mx include:spf.server-he.de -all
+
+mx0:
+  type: A
+  value: 80.237.138.5

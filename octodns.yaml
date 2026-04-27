@@ -1,0 +1,18 @@
+---
+providers:
+  config:
+    class: octodns.provider.yaml.YamlProvider
+    directory: ./zones
+    default_ttl: 300
+    enforce_order: true
+
+  hetzner:
+    class: octodns_hetzner.HetznerProvider
+    token: env/HETZNER_TOKEN
+
+zones:
+  jscraftcamp.org.:
+    sources:
+      - config
+    targets:
+      - hetzner

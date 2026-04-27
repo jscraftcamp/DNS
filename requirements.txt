@@ -1,0 +1,2 @@
+octodns==1.16.0
+octodns-hetzner==2.0.0

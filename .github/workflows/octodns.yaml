@@ -1,0 +1,86 @@
+name: OctoDNS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'octodns.yaml'
+      - 'zones/**'
+      - 'requirements.txt'
+  pull_request:
+    paths:
+      - 'octodns.yaml'
+      - 'zones/**'
+      - 'requirements.txt'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  plan:
+    name: Plan (dry-run)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Run octodns-sync dry-run
+        id: sync
+        run: |
+          OUTPUT=$(octodns-sync --config-file=octodns.yaml 2>&1) || true
+          echo "$OUTPUT"
+          {
+            echo 'plan<<EOF'
+            echo "$OUTPUT"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+        env:
+          HETZNER_TOKEN: ${{ secrets.HETZNER_TOKEN }}
+
+      - name: Find existing comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: github-actions[bot]
+          body-includes: OctoDNS Plan
+
+      - name: Post plan to PR
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            ## OctoDNS Plan
+
+            ```
+            ${{ steps.sync.outputs.plan }}
+            ```
+
+  apply:
+    name: Apply
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - run: octodns-sync --config-file=octodns.yaml --doit
+        env:
+          HETZNER_TOKEN: ${{ secrets.HETZNER_TOKEN }}
