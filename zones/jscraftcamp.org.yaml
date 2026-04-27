@@ -1,7 +1,9 @@
 ---
 '':
   - type: A
-    value: 75.2.60.5
+    values:
+      - 75.2.60.5
+      - 99.83.231.61
   - type: MX
     value:
       exchange: mx0.jscraftcamp.org.
