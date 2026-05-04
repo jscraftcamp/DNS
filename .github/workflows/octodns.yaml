@@ -8,7 +8,7 @@ on:
       - 'octodns.yaml'
       - 'zones/**'
       - 'requirements.txt'
-  pull_request:
+  pull_request_target:
     paths:
       - 'octodns.yaml'
       - 'zones/**'
@@ -21,10 +21,14 @@ permissions:
 jobs:
   plan:
     name: Plan (dry-run)
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
+    environment: octodns-plan
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
 
       - uses: actions/setup-python@v5
         with:
