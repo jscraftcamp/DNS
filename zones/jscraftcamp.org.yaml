@@ -6,14 +6,14 @@
       - 99.83.231.61
   - type: MX
     value:
-      exchange: mx0.jscraftcamp.org.
+      exchange: mail.jscraftcamp.org.
       preference: 50
   - type: TXT
     value: v=spf1 a mx include:spf.server-he.de -all
 
-mx0:
-  type: A
-  value: 80.237.138.5
+mail:
+  type: CNAME
+  value: mail.stack-forge.cloud.
 
 www:
   type: CNAME
